@@ -1,6 +1,7 @@
 package ukma.project.fifam.models;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class User {
@@ -17,6 +18,9 @@ public class User {
 
     @Column(name = "balance", columnDefinition = "Decimal(10,2) default '0.00'", nullable = false)
     private String balance;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Category> categories;
 
     public User() {
     }
@@ -64,6 +68,14 @@ public class User {
         this.balance = balance;
     }
 
+    public List getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -71,6 +83,7 @@ public class User {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", balance='" + balance + '\'' +
+                ", categories=" + categories +
                 '}';
     }
 }
