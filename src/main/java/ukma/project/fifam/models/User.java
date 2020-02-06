@@ -30,6 +30,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<PeriodicPays> periodicPays;
 
+    @OneToMany(mappedBy = "user")
+    private List<BalanceFiller> balanceFillers;
+
     public User() {
     }
 
@@ -98,6 +101,14 @@ public class User {
 
     public void setPeriodicPays(List<PeriodicPays> periodicPays) {
         this.periodicPays = periodicPays;
+    }
+
+    public List<BalanceFiller> getBalanceFillers() {
+        return balanceFillers;
+    }
+
+    public void setBalanceFillers(List<BalanceFiller> balanceFillers) {
+        this.balanceFillers = balanceFillers;
     }
 
     @Override
