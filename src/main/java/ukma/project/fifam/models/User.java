@@ -27,6 +27,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Journal> records;
 
+    @OneToMany(mappedBy = "user")
+    private List<PeriodicPays> periodicPays;
+
     public User() {
     }
 
@@ -87,6 +90,14 @@ public class User {
 
     public void setRecords(List<Journal> records) {
         this.records = records;
+    }
+
+    public List<PeriodicPays> getPeriodicPays() {
+        return periodicPays;
+    }
+
+    public void setPeriodicPays(List<PeriodicPays> periodicPays) {
+        this.periodicPays = periodicPays;
     }
 
     @Override
