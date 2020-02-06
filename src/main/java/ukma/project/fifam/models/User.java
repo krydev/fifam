@@ -25,12 +25,6 @@ public class User {
     private List<Category> categories;
 
     @OneToMany(mappedBy = "user")
-    private List<Journal> records;
-
-    @OneToMany(mappedBy = "user")
-    private List<PeriodicPays> periodicPays;
-
-    @OneToMany(mappedBy = "user")
     private List<BalanceFiller> balanceFillers;
 
     public User() {
@@ -85,22 +79,6 @@ public class User {
 
     public void setCategories(List<Category> categories) {
         this.categories = categories;
-    }
-
-    public List<Journal> getRecords() {
-        return records;
-    }
-
-    public void setRecords(List<Journal> records) {
-        this.records = records;
-    }
-
-    public List<PeriodicPays> getPeriodicPays() {
-        return periodicPays;
-    }
-
-    public void setPeriodicPays(List<PeriodicPays> periodicPays) {
-        this.periodicPays = periodicPays;
     }
 
     public List<BalanceFiller> getBalanceFillers() {
