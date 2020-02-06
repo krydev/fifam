@@ -1,5 +1,7 @@
 package ukma.project.fifam.models;
 
+import org.springframework.data.jpa.repository.Query;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
