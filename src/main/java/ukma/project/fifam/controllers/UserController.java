@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ukma.project.fifam.models.*;
+import ukma.project.fifam.repos.UserRepo;
 
 import java.util.Optional;
 

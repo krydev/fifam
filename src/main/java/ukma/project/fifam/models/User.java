@@ -2,8 +2,10 @@ package ukma.project.fifam.models;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
+@Table(name = "user")
 public class User {
     @Id
     @Column(name = "id", unique = true, nullable = false)
@@ -21,6 +23,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Category> categories;
+
+    @OneToMany(mappedBy = "user")
+    private List<Journal> records;
 
     public User() {
     }
@@ -76,6 +81,14 @@ public class User {
         this.categories = categories;
     }
 
+    public List<Journal> getRecords() {
+        return records;
+    }
+
+    public void setRecords(List<Journal> records) {
+        this.records = records;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -85,5 +98,21 @@ public class User {
                 ", balance='" + balance + '\'' +
                 ", categories=" + categories +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id &&
+                email.equals(user.email) &&
+                Objects.equals(password, user.password) &&
+                balance.equals(user.balance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, password, balance);
     }
 }

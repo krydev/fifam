@@ -3,6 +3,7 @@ package ukma.project.fifam.models;
 import ukma.project.fifam.Frequency;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Category {
@@ -22,7 +23,7 @@ public class Category {
     private Frequency freq;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     public long getId() {
@@ -74,5 +75,21 @@ public class Category {
                 ", freq=" + freq +
                 ", user=" + user +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Category category = (Category) o;
+        return id == category.id &&
+                name.equals(category.name) &&
+                budget.equals(category.budget) &&
+                freq == category.freq;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, budget, freq);
     }
 }
