@@ -39,6 +39,8 @@ public class AuthController {
         if (!userForReal.getPassword().equals(dto.password)){
             return ResponseEntity.badRequest().body("Wrong password");
         }
+        String t = jwtUtil.generateToken(userForReal);
+        jwtUtil.validateToken(t, userForReal);
         return new ResponseEntity<>(jwtUtil.generateToken(userForReal), HttpStatus.OK);
     }
 }

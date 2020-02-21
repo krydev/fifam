@@ -17,8 +17,8 @@ import ukma.project.fifam.models.User;
 public class JwtUtil implements Serializable {
     private static final long serialVersionUID = -2550185165626007488L;
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
-    @Value("${jwt.secret}")
-    private String secret;
+    //@Value("${jwt.secret}")
+    private String secret = "helloworld";
     //retrieve username from jwt token
     public String getUserIdFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);

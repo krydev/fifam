@@ -16,7 +16,7 @@ public class UserController {
     private UserRepo userRepo;
 
     @GetMapping(value = "/users")
-    public ResponseEntity index() {
+    public ResponseEntity index(@RequestAttribute(value="userId") Long userId) {
         return ResponseEntity.ok(userRepo.findAll());
     }
 

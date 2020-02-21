@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.RequestContext;
 import ukma.project.fifam.models.User;
 import ukma.project.fifam.repos.UserRepo;
 import ukma.project.fifam.utils.JwtUtil;
@@ -20,25 +21,24 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Autowired
     private UserRepo userRepo;
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
     @Override
     public boolean preHandle(
             HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String header = request.getHeader("Authorization");
-        if (header.length() == 0){
+        if (header == null || header.length() == 0){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Auth header is missing");
             return false;
         }
-        String userId = jwtUtil.getUserIdFromToken(header);
-        Optional<User> user = userRepo.findById(Long.parseLong(userId));
+        header = header.replace("Bearer ", "");
+        String s = new JwtUtil().getUserIdFromToken(header);
+        Long userId = Long.parseLong(new JwtUtil().getUserIdFromToken(header));
+        Optional<User> user = userRepo.findById(userId);
         if (!user.isPresent()){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "User not found");
             return false;
         }
+        request.setAttribute("userId", user.get().getId());
         return true;
-        //request.getHeaders("User").
     }
 
     @Override
