@@ -27,24 +27,24 @@ public class CategoryController {
     private JwtUtil jwtUtil;
 
     @GetMapping(value = "/categories")
-    public ResponseEntity<?> getCategories(@RequestHeader("Authorization") String authHeader){
-        Optional<User> currUser = getCurrentUser(authHeader);
+    public ResponseEntity<?> getCategories(@RequestAttribute(value = "userId") Long userId){
+        Optional<User> currUser = userRepo.findById(userId);
         if (!currUser.isPresent()) return ResponseEntity.badRequest().body("User not found");
         return ResponseEntity.ok(currUser.get().getCategories());
     }
 
     @GetMapping("/categories/{id}")
-    public ResponseEntity<?> getCategoryById(@RequestHeader("Authorization") String authHeader,
+    public ResponseEntity<?> getCategoryById(@RequestAttribute(value = "userId") Long userId,
                                           @PathVariable String id){
-        Optional<User> currUser = getCurrentUser(authHeader);
+        Optional<User> currUser = userRepo.findById(userId);
         if (!currUser.isPresent()) return ResponseEntity.badRequest().body("User not found");
         return findCategoryById(currUser.get(), id);
     }
 
     @PostMapping("/categories")
-    public ResponseEntity<?> createCategory(@RequestHeader("Authorization") String authHeader,
+    public ResponseEntity<?> createCategory(@RequestAttribute(value = "userId") Long userId,
                                             @RequestBody Map<String, String> body){
-        Optional<User> currUser = getCurrentUser(authHeader);
+        Optional<User> currUser = userRepo.findById(userId);
         if (!currUser.isPresent()) return ResponseEntity.badRequest().body("User not found");
         String name = body.get("name");
         String budget = body.get("budget");
@@ -55,10 +55,10 @@ public class CategoryController {
     }
 
     @PutMapping("/categories/{id}")
-    public ResponseEntity<?> updateCategory(@RequestHeader("Authorization") String authHeader,
+    public ResponseEntity<?> updateCategory(@RequestAttribute(value = "userId") Long userId,
                                             @PathVariable String id,
                                             @RequestBody Map<String, String> body){
-        Optional<User> currUser = getCurrentUser(authHeader);
+        Optional<User> currUser = userRepo.findById(userId);
         if (!currUser.isPresent()) return ResponseEntity.badRequest().body("User not found");
         ResponseEntity resp = findCategoryById(currUser.get(), id);
         if (!resp.getStatusCode().equals(HttpStatus.OK)) return resp;
@@ -78,9 +78,9 @@ public class CategoryController {
     }
 
     @DeleteMapping("/categories/{id}")
-    public ResponseEntity<?> deleteCategory(@RequestHeader("Authorization") String authHeader,
+    public ResponseEntity<?> deleteCategory(@RequestAttribute(value = "userId") Long userId,
                                             @PathVariable String id){
-        Optional<User> currUser = getCurrentUser(authHeader);
+        Optional<User> currUser = userRepo.findById(userId);
         if (!currUser.isPresent()) return ResponseEntity.badRequest().body("User not found");
         ResponseEntity resp = findCategoryById(currUser.get(), id);
         if (!resp.getStatusCode().equals(HttpStatus.OK)) return resp;
