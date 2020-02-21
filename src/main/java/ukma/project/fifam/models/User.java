@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "user")
 public class User {
     @Id
     @Column(name = "id", unique = true, nullable = false)
@@ -23,10 +22,10 @@ public class User {
     @Column(name = "balance", columnDefinition = "Decimal(10,2) default '0.00'", nullable = false)
     private String balance;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Category> categories;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<BalanceFiller> balanceFillers;
 
     public User() {
