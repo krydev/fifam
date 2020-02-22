@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JournalRepo extends JpaRepository<Journal, UserCategoryIdentity> {
-    @Query("SELECT j FROM Journal j WHERE j.userId=?1")
-    public Optional<List<Journal>> findJournalsByUserId(Long id);
+    @Query("SELECT j FROM Journal j WHERE j.user=?1")
+    public Optional<List<Journal>> findJournalsByUserId(User id);
 }

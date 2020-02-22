@@ -29,7 +29,7 @@ public class JournalController {
     @GetMapping(value = "/journals")
     public ResponseEntity<?> getJournals(@RequestAttribute(value = "userId") Long userId){
         Optional<User> currUser = userRepo.findById(userId);
-        return ResponseEntity.ok(journalRepo.findJournalsByUserId(currUser.get().getId()));
+        return ResponseEntity.ok(journalRepo.findJournalsByUserId(currUser.get()));
     }
 
     @PostMapping(value = "/journals")

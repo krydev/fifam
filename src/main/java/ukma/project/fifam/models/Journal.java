@@ -8,7 +8,6 @@ import java.util.Date;
 @Entity
 public class Journal {
     @Id
-    @Column(name = "id", unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 

@@ -1,5 +1,6 @@
 package ukma.project.fifam.dtos.journals;
 
+import com.sun.istack.Nullable;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -21,7 +22,7 @@ public class JournalCreateDto {
     @NotNull
     public String sum;
 
-    @Null
+    @Nullable
     public String desc;
 
     @NotNull
