@@ -15,6 +15,7 @@ public class AuthInterceptorConfig extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(a())
                 .addPathPatterns("/user").addPathPatterns("/users").addPathPatterns("/users/")
-                .addPathPatterns("/categories").addPathPatterns("/categories/*");
+                .addPathPatterns("/categories").addPathPatterns("/categories/*")
+                .addPathPatterns("/journals").addPathPatterns("/journals/*");
     }
 }

@@ -1,13 +1,16 @@
 package ukma.project.fifam.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 public class Journal {
-
-    @EmbeddedId
-    private UserCategoryIdentity id;
+    @Id
+    @Column(name = "id", unique = true, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     @Column(name = "record_date", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -22,12 +25,23 @@ public class Journal {
     @Column(name = "currentBalance", nullable = false, precision = 10, scale = 2)
     private String currBalance;
 
-    public UserCategoryIdentity getId() {
-        return id;
-    }
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
 
-    public void setId(UserCategoryIdentity id) {
-        this.id = id;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoryId", nullable = false)
+    private Category category;
+
+    public Journal(User user, Category category, Date recordDate, String sum, String description, String currBalance){
+        this.user = user;
+        this.category = category;
+        this.recordDate = recordDate;
+        this.sum = sum;
+        this.desc = description;
+        this.currBalance = currBalance;
     }
 
     public Date getRecordDate() {

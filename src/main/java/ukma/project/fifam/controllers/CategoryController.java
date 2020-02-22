@@ -29,7 +29,6 @@ public class CategoryController {
     @GetMapping(value = "/categories")
     public ResponseEntity<?> getCategories(@RequestAttribute(value = "userId") Long userId){
         Optional<User> currUser = userRepo.findById(userId);
-        if (!currUser.isPresent()) return ResponseEntity.badRequest().body("User not found");
         return ResponseEntity.ok(currUser.get().getCategories());
     }
 
@@ -37,7 +36,6 @@ public class CategoryController {
     public ResponseEntity<?> getCategoryById(@RequestAttribute(value = "userId") Long userId,
                                           @PathVariable String id){
         Optional<User> currUser = userRepo.findById(userId);
-        if (!currUser.isPresent()) return ResponseEntity.badRequest().body("User not found");
         return findCategoryById(currUser.get(), id);
     }
 
@@ -45,7 +43,6 @@ public class CategoryController {
     public ResponseEntity<?> createCategory(@RequestAttribute(value = "userId") Long userId,
                                             @RequestBody Map<String, String> body){
         Optional<User> currUser = userRepo.findById(userId);
-        if (!currUser.isPresent()) return ResponseEntity.badRequest().body("User not found");
         String name = body.get("name");
         String budget = body.get("budget");
         Frequency freq = Frequency.valueOf(body.get("frequency"));
@@ -59,7 +56,6 @@ public class CategoryController {
                                             @PathVariable String id,
                                             @RequestBody Map<String, String> body){
         Optional<User> currUser = userRepo.findById(userId);
-        if (!currUser.isPresent()) return ResponseEntity.badRequest().body("User not found");
         ResponseEntity resp = findCategoryById(currUser.get(), id);
         if (!resp.getStatusCode().equals(HttpStatus.OK)) return resp;
         Category category = (Category) resp.getBody();
@@ -81,7 +77,6 @@ public class CategoryController {
     public ResponseEntity<?> deleteCategory(@RequestAttribute(value = "userId") Long userId,
                                             @PathVariable String id){
         Optional<User> currUser = userRepo.findById(userId);
-        if (!currUser.isPresent()) return ResponseEntity.badRequest().body("User not found");
         ResponseEntity resp = findCategoryById(currUser.get(), id);
         if (!resp.getStatusCode().equals(HttpStatus.OK)) return resp;
 
