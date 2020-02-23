@@ -72,12 +72,12 @@ public class User {
         return balance;
     }
 
-    public void addToBalance(String value) {
+    public void increaseBalance(String value) {
         BigDecimal newBalance = new BigDecimal(balance).add(new BigDecimal(value));
         this.balance = newBalance.toString();
     }
 
-    public void subtractFromBalance(String value) {
+    public void decreaseBalance(String value) {
         BigDecimal newBalance = new BigDecimal(balance).subtract(new BigDecimal(value));
         this.balance = newBalance.toString();
     }

@@ -14,6 +14,6 @@ public class AuthInterceptorConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(a())
-                .addPathPatterns("/profile", "/newPassword", "/categories", "/journal", "/categories/");
+                .addPathPatterns("/profile", "/newPassword", "/categories", "/journal", "/categories/**");
     }
 }

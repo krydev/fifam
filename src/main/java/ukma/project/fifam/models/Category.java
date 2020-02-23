@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import ukma.project.fifam.Frequency;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity
@@ -19,7 +20,7 @@ public class Category {
     @Column(name = "budget", precision = 10, scale = 2, nullable = false)
     private String budget;
 
-    @Column(name = "currentExpenses", columnDefinition = "Decimal(10,2) default '0.00'", nullable = false)
+    @Column(name = "currentExpenses", columnDefinition = "Decimal(10,2) default '0.00'")
     private String currentExpenses;
 
     @Enumerated(EnumType.STRING)
@@ -38,6 +39,7 @@ public class Category {
         this.budget = budget;
         this.freq = freq;
         this.user = user;
+        this.currentExpenses = "0.00";
     }
 
     public long getId() {
@@ -68,8 +70,13 @@ public class Category {
         return currentExpenses;
     }
 
-    public void setCurrentExpenses(String currentExpenses) {
-        this.currentExpenses = currentExpenses;
+    public void increaseCurrentExpenses(String value) {
+        BigDecimal newExpenses = new BigDecimal(currentExpenses).add(new BigDecimal(value));
+        this.currentExpenses = newExpenses.toString();
+    }
+
+    public void resetCurrentExpenses(){
+        this.currentExpenses = "0.00";
     }
 
     public Frequency getFreq() {

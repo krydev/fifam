@@ -4,8 +4,8 @@ package ukma.project.fifam.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ukma.project.fifam.dtos.journals.JournalCreateDto;
 import ukma.project.fifam.models.*;
+import ukma.project.fifam.repos.JournalRepo;
 import ukma.project.fifam.repos.UserRepo;
 
 import java.time.ZonedDateTime;
@@ -18,7 +18,7 @@ public class UserController {
     private UserRepo userRepo;
 
     @Autowired
-    private JournalController journalController;
+    private JournalRepo journalRepo;
 
     @GetMapping(value = "/profile")
     public ResponseEntity<?> getProfile(@RequestAttribute(value = "userId") Long userId) {
@@ -44,11 +44,11 @@ public class UserController {
                                            @RequestBody Map<String, String> body){
         User currUser = userRepo.findById(userId).get();
         String addSum = body.get("addSum");
-        currUser.addToBalance(addSum);
-        JournalCreateDto dto = new JournalCreateDto(
+        currUser.increaseBalance(addSum);
+        Journal journalRecord = new Journal(currUser,
                 null, ZonedDateTime.now().toLocalDateTime(), addSum,
                 "Salary", currUser.getBalance());
-        return journalController.createJournalRecord(userId, dto);
+        return ResponseEntity.ok(journalRepo.save(journalRecord));
     }
 
 
