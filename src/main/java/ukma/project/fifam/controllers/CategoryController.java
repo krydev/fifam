@@ -85,11 +85,6 @@ public class CategoryController {
         return ResponseEntity.noContent().build();
     }
 
-    private Optional<User> getCurrentUser(String header){
-        String userId = jwtUtil.getUserIdFromToken(header);
-        return userRepo.findById(Long.parseLong(userId));
-    }
-
     private ResponseEntity<?> findCategoryById(User currUser, String id){
         Long catId = Long.parseLong(id);
         Optional<Category> category = catRepo.findById(catId);

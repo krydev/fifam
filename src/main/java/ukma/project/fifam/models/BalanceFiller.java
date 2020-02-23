@@ -1,5 +1,6 @@
 package ukma.project.fifam.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ukma.project.fifam.Frequency;
 
 import javax.persistence.*;
@@ -23,6 +24,7 @@ public class BalanceFiller {
     @Column(name = "sum", nullable = false, precision = 10, scale = 2)
     private String sum;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
     private User user;

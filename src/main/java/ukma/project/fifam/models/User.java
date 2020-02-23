@@ -1,5 +1,6 @@
 package ukma.project.fifam.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.*;
@@ -27,6 +28,10 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<BalanceFiller> balanceFillers;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Journal> journal;
 
     public User() {
     }
@@ -88,6 +93,10 @@ public class User {
 
     public void setBalanceFillers(List<BalanceFiller> balanceFillers) {
         this.balanceFillers = balanceFillers;
+    }
+
+    public List<Journal> getJournal() {
+        return journal;
     }
 
     @Override

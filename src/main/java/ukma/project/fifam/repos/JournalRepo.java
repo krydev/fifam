@@ -7,7 +7,7 @@ import ukma.project.fifam.models.*;
 import java.util.List;
 import java.util.Optional;
 
-public interface JournalRepo extends JpaRepository<Journal, UserCategoryIdentity> {
+public interface JournalRepo extends JpaRepository<Journal, Long> {
     @Query("SELECT j FROM Journal j WHERE j.user=?1")
-    public Optional<List<Journal>> findJournalsByUserId(User id);
+    Optional<List<Journal>> findJournalsByUserId(User id);
 }

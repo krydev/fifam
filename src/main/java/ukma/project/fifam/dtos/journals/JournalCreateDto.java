@@ -13,7 +13,7 @@ import java.util.Date;
 
 public class JournalCreateDto {
 
-    @NotNull
+    @Nullable
     public Long categoryId;
 
     @DateTimeFormat

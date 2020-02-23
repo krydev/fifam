@@ -1,6 +1,7 @@
 package ukma.project.fifam.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -8,6 +9,7 @@ import java.util.Date;
 @Entity
 public class Journal {
     @Id
+    @Column(name = "id", unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
@@ -18,7 +20,7 @@ public class Journal {
     @Column(name = "sum", nullable = false, precision = 10, scale = 2)
     private String sum;
 
-    @Column(name = "description", length = 512, nullable = false)
+    @Column(name = "description", length = 512)
     private String desc;
 
     @Column(name = "currentBalance", nullable = false, precision = 10, scale = 2)
@@ -29,10 +31,12 @@ public class Journal {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoryId", nullable = false)
+    @JoinColumn(name = "categoryId")
     private Category category;
+
+    public Journal(){}
 
     public Journal(User user, Category category, Date recordDate, String sum, String description, String currBalance){
         this.user = user;
@@ -75,6 +79,30 @@ public class Journal {
         this.currBalance = currBalance;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "Journal{" +
@@ -83,6 +111,7 @@ public class Journal {
                 ", sum='" + sum + '\'' +
                 ", desc='" + desc + '\'' +
                 ", currBalance='" + currBalance + '\'' +
+                ", category=" + category +
                 '}';
     }
 }
