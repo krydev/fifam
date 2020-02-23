@@ -1,21 +1,25 @@
 package ukma.project.fifam.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ukma.project.fifam.Frequency;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
+
 
 @Entity
 public class PeriodicPays {
-    @EmbeddedId
-    private UserCategoryIdentity id;
+    @Id
+    @Column(name = "id", unique = true, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     @Column(name = "name", length = 255, nullable = false)
     private String name;
 
     @Column(name = "last_pay_date", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date lastPayDate;
+    private LocalDateTime lastPayDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "freq", nullable = false)
@@ -24,13 +28,15 @@ public class PeriodicPays {
     @Column(name = "sum", nullable = false, precision = 10, scale = 2)
     private String sum;
 
-    public UserCategoryIdentity getId() {
-        return id;
-    }
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
 
-    public void setId(UserCategoryIdentity id) {
-        this.id = id;
-    }
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoryId")
+    private Category category;
 
     public String getName() {
         return name;
@@ -40,11 +46,11 @@ public class PeriodicPays {
         this.name = name;
     }
 
-    public Date getLastPayDate() {
+    public LocalDateTime getLastPayDate() {
         return lastPayDate;
     }
 
-    public void setLastPayDate(Date lastPayDate) {
+    public void setLastPayDate(LocalDateTime lastPayDate) {
         this.lastPayDate = lastPayDate;
     }
 
@@ -62,6 +68,30 @@ public class PeriodicPays {
 
     public void setSum(String sum) {
         this.sum = sum;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     @Override

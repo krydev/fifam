@@ -4,10 +4,12 @@ package ukma.project.fifam.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ukma.project.fifam.dtos.journals.JournalCreateDto;
 import ukma.project.fifam.models.*;
 import ukma.project.fifam.repos.UserRepo;
 
-import java.util.Optional;
+import java.time.ZonedDateTime;
+import java.util.Map;
 
 @RestController
 public class UserController {
@@ -15,52 +17,44 @@ public class UserController {
     @Autowired
     private UserRepo userRepo;
 
-    @GetMapping(value = "/users")
-    public ResponseEntity index(@RequestAttribute(value="userId") Long userId) {
-        return ResponseEntity.ok(userRepo.findAll());
+    @Autowired
+    private JournalController journalController;
+
+    @GetMapping(value = "/profile")
+    public ResponseEntity<?> getProfile(@RequestAttribute(value = "userId") Long userId) {
+        return ResponseEntity.ok(userRepo.findById(userId).get());
     }
 
-    @GetMapping(value = "/user")
-    public ResponseEntity getUser(@RequestParam(value="id") Long id) {
-        Optional<User> foundUser = userRepo.findById(id);
+    @PostMapping(value = "/newPassword")
+    public ResponseEntity<?> changePassword(@RequestAttribute(value = "userId") Long userId,
+                                     @RequestBody Map<String, String> body){
+        User currUser = userRepo.findById(userId).get();
+        String oldPass = body.get("oldPassword");
+        String newPass = body.get("newPassword");
 
-        if(foundUser.isPresent()){
-            return ResponseEntity.ok(foundUser.get());
-        } else {
-            return ResponseEntity.badRequest().body("No user with specified id " + id + " found");
-        }
+        if (!oldPass.equals(currUser.getPassword()))
+            return ResponseEntity.badRequest().body("Incorrect password");
+
+        currUser.setPassword(newPass);
+        return ResponseEntity.ok(userRepo.save(currUser));
     }
 
-    @PostMapping(value = "/user")
-    public ResponseEntity addUser(
-            @RequestParam(value="email") String email,
-            @RequestParam(value="password") String pass,
-            @RequestParam(value="balance") String balance) {
-        return ResponseEntity.ok(userRepo.save(new User(email, pass, balance)));
+    @PutMapping(value = "/profile")
+    public ResponseEntity<?> updateBalance(@RequestAttribute(value="userId") Long userId,
+                                           @RequestBody Map<String, String> body){
+        User currUser = userRepo.findById(userId).get();
+        String addSum = body.get("addSum");
+        currUser.addToBalance(addSum);
+        JournalCreateDto dto = new JournalCreateDto(
+                null, ZonedDateTime.now().toLocalDateTime(), addSum,
+                "Salary", currUser.getBalance());
+        return journalController.createJournalRecord(userId, dto);
     }
 
-    @PutMapping(value = "/user")
-    public ResponseEntity updateUser(
-            @RequestParam(value="id") Long id,
-            @RequestParam(value="email") String email,
-            @RequestParam(value="password") String pass,
-            @RequestParam(value="balance") String balance){
-        Optional<User> optionalUser = userRepo.findById(id);
-        if(!optionalUser.isPresent()){
-            return ResponseEntity.badRequest().body("No user with specified id " + id + " found");
-        }
 
-        User foundUser = optionalUser.get();
-        foundUser.setEmail(email);
-        foundUser.setPassword(pass);
-        foundUser.setBalance(balance);
-
-        return ResponseEntity.ok(userRepo.save(foundUser));
-    }
-
-    @DeleteMapping(value = "/user")
-    public ResponseEntity removeUser(@RequestParam(value="id") Long id) {
-        userRepo.deleteById(id);
+    @DeleteMapping(value = "/profile")
+    public ResponseEntity<?> removeUser(@RequestAttribute(value="userId") Long userId) {
+        userRepo.deleteById(userId);
         return ResponseEntity.noContent().build();
     }
 }

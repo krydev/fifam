@@ -9,7 +9,7 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class JournalCreateDto {
 
@@ -17,7 +17,7 @@ public class JournalCreateDto {
     public Long categoryId;
 
     @DateTimeFormat
-    public Date recordDate;
+    public LocalDateTime recordDate;
 
     @NotNull
     public String sum;
@@ -27,4 +27,14 @@ public class JournalCreateDto {
 
     @NotNull
     public String currBalance;
+
+    public JournalCreateDto(Long categoryId, LocalDateTime recordDate,
+                            @NotNull String sum, String desc,
+                            @NotNull String currBalance) {
+        this.categoryId = categoryId;
+        this.recordDate = recordDate;
+        this.sum = sum;
+        this.desc = desc;
+        this.currBalance = currBalance;
+    }
 }

@@ -26,22 +26,26 @@ public class JournalController {
     @Autowired
     private CategoryRepo categoryRepo;
 
-    @GetMapping(value = "/journals")
-    public ResponseEntity<?> getJournals(@RequestAttribute(value = "userId") Long userId){
+    @GetMapping(value = "/journal")
+    public ResponseEntity<?> getJournalRecords(@RequestAttribute(value = "userId") Long userId){
         Optional<User> currUser = userRepo.findById(userId);
         return ResponseEntity.ok(journalRepo.findJournalsByUserId(currUser.get()));
     }
 
-    @PostMapping(value = "/journals")
-    public ResponseEntity<?> createJournal(@RequestAttribute(value = "userId") Long userId,
+    @PostMapping(value = "/journal")
+    public ResponseEntity<?> createJournalRecord(@RequestAttribute(value = "userId") Long userId,
                                            @Validated @RequestBody JournalCreateDto dto){
 
         Optional<User> user = userRepo.findById(userId);
-        Optional<Category> category = categoryRepo.findById(dto.categoryId);
-        if (!category.isPresent()){
-            return ResponseEntity.badRequest().body("No category with specified id " + dto.categoryId + " found");
+        Category category = null;
+        if (dto.categoryId != null){
+            Optional<Category> cat = categoryRepo.findById(dto.categoryId);
+            if (!cat.isPresent()){
+                return ResponseEntity.badRequest().body("No category with specified id " + dto.categoryId + " found");
+            }
+            category = cat.get();
         }
-        Journal journal = new Journal(user.get(), category.get(), dto.recordDate, dto.sum, dto.desc, dto.currBalance);
+        Journal journal = new Journal(user.get(), category, dto.recordDate, dto.sum, dto.desc, dto.currBalance);
         return ResponseEntity.ok(journalRepo.save(journal));
     }
 }

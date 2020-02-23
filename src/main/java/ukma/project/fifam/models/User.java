@@ -1,9 +1,9 @@
 package ukma.project.fifam.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,9 +29,6 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<BalanceFiller> balanceFillers;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Journal> journal;
 
     public User() {
     }
@@ -75,8 +72,14 @@ public class User {
         return balance;
     }
 
-    public void setBalance(String balance) {
-        this.balance = balance;
+    public void addToBalance(String value) {
+        BigDecimal newBalance = new BigDecimal(balance).add(new BigDecimal(value));
+        this.balance = newBalance.toString();
+    }
+
+    public void subtractFromBalance(String value) {
+        BigDecimal newBalance = new BigDecimal(balance).subtract(new BigDecimal(value));
+        this.balance = newBalance.toString();
     }
 
     public List getCategories() {
@@ -95,9 +98,6 @@ public class User {
         this.balanceFillers = balanceFillers;
     }
 
-    public List<Journal> getJournal() {
-        return journal;
-    }
 
     @Override
     public String toString() {

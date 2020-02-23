@@ -23,8 +23,6 @@ public class CategoryController {
     @Autowired
     private UserRepo userRepo;
 
-    @Autowired
-    private JwtUtil jwtUtil;
 
     @GetMapping(value = "/categories")
     public ResponseEntity<?> getCategories(@RequestAttribute(value = "userId") Long userId){
