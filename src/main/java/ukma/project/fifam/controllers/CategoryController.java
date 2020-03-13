@@ -66,11 +66,13 @@ public class CategoryController {
         Category category = (Category) resp.getBody();
         assert category != null;
 
-        resp = handleExpense(currUser, category, body.sum);
-        if (!resp.getStatusCode().equals(HttpStatus.OK)) return resp;
+        currUser.decreaseBalance(body.sum);
+        currUser.increaseBalance(body.sum);
+//        resp = handleExpense(currUser, category, body.sum);
+//        if (!resp.getStatusCode().equals(HttpStatus.OK)) return resp;
 
         Journal expenseRecord = new Journal(currUser,
-                category, ZonedDateTime.now().toLocalDateTime(), "-" + body.sum,
+                category, body.recordDate, "-" + body.sum,
                 body.desc, currUser.getBalance());
 
         //committing changes
@@ -79,30 +81,31 @@ public class CategoryController {
         return ResponseEntity.ok(journalRepo.save(expenseRecord));
     }
 
-    private ResponseEntity<?> handleExpense(User user, Category category, String sum){
-        user.decreaseBalance(sum);
-        boolean success = true;
-        String errorText = null;
-        // Check if balance became negative or category limit exceeded
-        if (user.getBalance().charAt(0) == '-'){
-            errorText = "Not enough money on balance";
-            success = false;
-        } else if (new BigDecimal(category.getCurrentExpenses()).add(new BigDecimal(sum))
-                    .compareTo(new BigDecimal(category.getBudget())) > 0){
-            errorText = "Exceeded category expenses limit";
-            success = false;
-        } else {
-            //all good - updating current expenses
-            category.increaseCurrentExpenses(sum);
-        }
-        if (!success){
-            //returning balance to previous state
-            user.increaseBalance(sum);
-            return ResponseEntity.unprocessableEntity().body(errorText);
-        }
-        return ResponseEntity.ok().build();
 
-    }
+//    private ResponseEntity<?> handleExpense(User user, Category category, String sum){
+//        user.decreaseBalance(sum);
+//        boolean success = true;
+//        String errorText = null;
+//        // Check if balance became negative or category limit exceeded
+//        if (user.getBalance().charAt(0) == '-'){
+//            errorText = "Not enough money on balance";
+//            success = false;
+//        } else if (new BigDecimal(category.getCurrentExpenses()).add(new BigDecimal(sum))
+//                    .compareTo(new BigDecimal(category.getBudget())) > 0){
+//            errorText = "Exceeded category expenses limit";
+//            success = false;
+//        } else {
+//            //all good - updating current expenses
+//            category.increaseCurrentExpenses(sum);
+//        }
+//        if (!success){
+//            //returning balance to previous state
+//            user.increaseBalance(sum);
+//            return ResponseEntity.unprocessableEntity().body(errorText);
+//        }
+//        return ResponseEntity.ok().build();
+//
+//    }
 
     @PutMapping("/categories/{id}")
     public ResponseEntity<?> updateCategory(@RequestAttribute(value = "userId") Long userId,

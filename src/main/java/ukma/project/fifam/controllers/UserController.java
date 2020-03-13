@@ -47,7 +47,7 @@ public class UserController {
         currUser.increaseBalance(addSum);
         Journal journalRecord = new Journal(currUser,
                 null, ZonedDateTime.now().toLocalDateTime(), addSum,
-                "Salary", currUser.getBalance());
+                "Income", currUser.getBalance());
         return ResponseEntity.ok(journalRepo.save(journalRecord));
     }
 

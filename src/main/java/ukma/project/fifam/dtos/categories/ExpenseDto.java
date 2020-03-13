@@ -11,6 +11,10 @@ public class ExpenseDto {
     @NotNull
     public String sum;
 
+    @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    public LocalDateTime recordDate;
+
     @Nullable
     public String desc;
 
