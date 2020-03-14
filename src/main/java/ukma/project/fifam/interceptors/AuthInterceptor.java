@@ -24,6 +24,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(
             HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (request.getMethod().equals("OPTIONS")) return true;
         String header = request.getHeader("Authorization");
         if (header == null || header.length() == 0){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Auth header is missing");
