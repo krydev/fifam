@@ -20,6 +20,7 @@ public class FifamApplication {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
                         .allowedOrigins("http://localhost:8080")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS")
                         .allowCredentials(true);
 			}
 		};
