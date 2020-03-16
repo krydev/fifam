@@ -67,7 +67,7 @@ public class CategoryController {
         assert category != null;
 
         currUser.decreaseBalance(body.sum);
-        currUser.increaseBalance(body.sum);
+        category.increaseCurrentExpenses(body.sum);
 //        resp = handleExpense(currUser, category, body.sum);
 //        if (!resp.getStatusCode().equals(HttpStatus.OK)) return resp;
 
