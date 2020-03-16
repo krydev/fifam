@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ukma.project.fifam.dtos.auth.AuthDto;
 import ukma.project.fifam.models.User;
+import ukma.project.fifam.repos.JournalRepo;
 import ukma.project.fifam.repos.UserRepo;
 import ukma.project.fifam.utils.JwtUtil;
 
@@ -18,6 +19,9 @@ import java.util.Optional;
 public class AuthController {
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private JournalRepo journalRepo;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -41,6 +45,8 @@ public class AuthController {
         }
         String t = jwtUtil.generateToken(userForReal);
         jwtUtil.validateToken(t, userForReal);
+        journalRepo.updateJournalFromBalanceFiller("daily","weekly", "biweekly", "monthly", "yearly");
+        journalRepo.updateJournalFromPeriodicPays("daily","weekly", "biweekly", "monthly", "yearly");
         return new ResponseEntity<>(jwtUtil.generateToken(userForReal), HttpStatus.OK);
     }
 }
