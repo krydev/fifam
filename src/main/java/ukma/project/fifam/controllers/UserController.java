@@ -8,6 +8,7 @@ import ukma.project.fifam.models.*;
 import ukma.project.fifam.repos.JournalRepo;
 import ukma.project.fifam.repos.UserRepo;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class UserController {
         String addSum = body.get("addSum");
         currUser.increaseBalance(addSum);
         Journal journalRecord = new Journal(currUser,
-                null, ZonedDateTime.now().toLocalDateTime(), addSum,
+                null, Instant.now().getEpochSecond(), addSum,
                 "Income", currUser.getBalance());
         return ResponseEntity.ok(journalRepo.save(journalRecord));
     }

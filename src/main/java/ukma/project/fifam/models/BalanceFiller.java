@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import ukma.project.fifam.Frequency;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 public class BalanceFiller {
@@ -14,7 +13,7 @@ public class BalanceFiller {
     private long id;
 
     @Column(name = "last_pay_date", nullable = false)
-    private LocalDateTime lastPayDate;
+    private long lastPayDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "freq", nullable = false)
@@ -36,11 +35,11 @@ public class BalanceFiller {
         this.id = id;
     }
 
-    public LocalDateTime getLastPayDate() {
+    public long getLastPayDate() {
         return lastPayDate;
     }
 
-    public void setLastPayDate(LocalDateTime lastPayDate) {
+    public void setLastPayDate(long lastPayDate) {
         this.lastPayDate = lastPayDate;
     }
 

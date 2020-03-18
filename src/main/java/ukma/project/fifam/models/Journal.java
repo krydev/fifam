@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 public class Journal {
@@ -14,7 +13,7 @@ public class Journal {
     private long id;
 
     @Column(name = "record_date", nullable = false)
-    private LocalDateTime recordDate;
+    private long recordDate;
 
     @Column(name = "sum", nullable = false, precision = 10, scale = 2)
     private String sum;
@@ -37,7 +36,7 @@ public class Journal {
 
     public Journal(){}
 
-    public Journal(User user, Category category, LocalDateTime recordDate, String sum,
+    public Journal(User user, Category category, long recordDate, String sum,
                    String description, String currBalance){
         this.user = user;
         this.category = category;
@@ -47,11 +46,11 @@ public class Journal {
         this.currBalance = currBalance;
     }
 
-    public LocalDateTime getRecordDate() {
+    public long getRecordDate() {
         return recordDate;
     }
 
-    public void setRecordDate(LocalDateTime recordDate) {
+    public void setRecordDate(long recordDate) {
         this.recordDate = recordDate;
     }
 
