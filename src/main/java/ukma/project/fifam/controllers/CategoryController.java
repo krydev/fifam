@@ -68,8 +68,6 @@ public class CategoryController {
 
         currUser.decreaseBalance(body.sum);
         category.increaseCurrentExpenses(body.sum);
-//        resp = handleExpense(currUser, category, body.sum);
-//        if (!resp.getStatusCode().equals(HttpStatus.OK)) return resp;
 
         Journal expenseRecord = new Journal(currUser,
                 category, body.recordDate, "-" + body.sum,
