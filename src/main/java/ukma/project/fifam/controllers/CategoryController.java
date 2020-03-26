@@ -16,6 +16,7 @@ import ukma.project.fifam.repos.JournalRepo;
 import ukma.project.fifam.repos.UserRepo;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -52,8 +53,9 @@ public class CategoryController {
         String budget = body.budget;
         Frequency freq = Frequency.valueOf(body.frequency);
         User user = currUser.get();
+        long lastPayDate = Instant.now().getEpochSecond();
 
-        return ResponseEntity.ok(catRepo.save(new Category(name, budget, freq, user)));
+        return ResponseEntity.ok(catRepo.save(new Category(name, budget, freq, lastPayDate, user)));
     }
 
     @PostMapping("/categories/{id}/expenses")

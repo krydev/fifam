@@ -27,6 +27,9 @@ public class Category {
     @Column(name = "freq", nullable = false)
     private Frequency freq;
 
+    @Column(name = "last_pay_date", nullable = false)
+    private long lastPayDate;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
@@ -34,11 +37,12 @@ public class Category {
 
     public Category(){}
 
-    public Category(String name, String budget, Frequency freq, User user) {
+    public Category(String name, String budget, Frequency freq, long lastPayDate, User user) {
         this.name = name;
         this.budget = budget;
         this.freq = freq;
         this.user = user;
+        this.lastPayDate = lastPayDate;
         this.currentExpenses = "0.00";
     }
 
@@ -93,6 +97,14 @@ public class Category {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public long getLastPayDate() {
+        return lastPayDate;
+    }
+
+    public void setLastPayDate(long lastPayDate) {
+        this.lastPayDate = lastPayDate;
     }
 
     @Override
