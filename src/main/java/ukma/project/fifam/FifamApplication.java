@@ -19,7 +19,7 @@ public class FifamApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:8080")
+                        .allowedOrigins("http://localhost:8080", "https://fifam-money.herokuapp.com")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS")
                         .allowCredentials(true);
 			}
