@@ -11,14 +11,8 @@ import ukma.project.fifam.Frequency;
 import ukma.project.fifam.dtos.auth.AuthDto;
 import ukma.project.fifam.dtos.fillers.PeriodicBalanceFiller;
 import ukma.project.fifam.dtos.fillers.PeriodicFillerType;
-import ukma.project.fifam.models.BalanceFiller;
-import ukma.project.fifam.models.Journal;
-import ukma.project.fifam.models.PeriodicPays;
-import ukma.project.fifam.models.User;
-import ukma.project.fifam.repos.BalanceFillerRepo;
-import ukma.project.fifam.repos.JournalRepo;
-import ukma.project.fifam.repos.PeriodicPaysRepo;
-import ukma.project.fifam.repos.UserRepo;
+import ukma.project.fifam.models.*;
+import ukma.project.fifam.repos.*;
 import ukma.project.fifam.utils.JwtUtil;
 
 import java.time.Instant;
@@ -40,6 +34,9 @@ public class AuthController {
 
     @Autowired
     private PeriodicPaysRepo periodicPaysRepo;
+
+    @Autowired
+    private CategoryRepo categoryRepo;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -188,6 +185,7 @@ public class AuthController {
             lastBalance = Double.parseDouble(lastJournal.get().getCurrBalance());
         }
 
+        // collect balance fillers in priority queue
         Optional<List<BalanceFiller>> balanceFillersOptional = balanceFillerRepo.findBalanceFillersByUserId(user);
         PriorityQueue<PeriodicBalanceFiller> queue = new PriorityQueue<>(PeriodicBalanceFiller.GetComparator());
         if (balanceFillersOptional.isPresent()){
@@ -196,6 +194,7 @@ public class AuthController {
                 queue.add(new PeriodicBalanceFiller(PeriodicFillerType.BALANCE_FILLER, bf.getSum(), bf.getFreq(), bf.getLastPayDate(), "Payment from balance filler", null, bf.getId()));
             }
         }
+        // collect periodic pays in priority queue
         Optional<List<PeriodicPays>> periodicPaysOptional = periodicPaysRepo.findPeriodicPaysByUserId(user);
         if (periodicPaysOptional.isPresent()) {
             List<PeriodicPays> periodicPays = periodicPaysOptional.get();
@@ -204,5 +203,23 @@ public class AuthController {
             }
         }
         updateJournalFromPriorityQueue(queue, user, currentTime, lastBalance);
+
+        // reset expenses in categories
+        Optional<List<Category>> categoriesOptional = categoryRepo.findCategoriesByUserId(user);
+        if (categoriesOptional.isPresent()){
+            List<Category> categories = categoriesOptional.get();
+            for(Category category : categories){
+                long timeInPeriod = getSecondsByFrequency(category.getFreq());
+                boolean hasToBeUpdated = false;
+                while (category.getLastPayDate() + timeInPeriod < currentTime){
+                    category.setLastPayDate(category.getLastPayDate() + timeInPeriod);
+                    category.resetCurrentExpenses();
+                    hasToBeUpdated = true;
+                }
+                if (hasToBeUpdated){
+                    categoryRepo.save(category);
+                }
+            }
+        }
     }
 }
