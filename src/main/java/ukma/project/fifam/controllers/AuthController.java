@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ukma.project.fifam.Frequency;
 import ukma.project.fifam.dtos.auth.AuthDto;
+import ukma.project.fifam.dtos.fillers.PeriodicBalanceFiller;
+import ukma.project.fifam.dtos.fillers.PeriodicFillerType;
 import ukma.project.fifam.models.BalanceFiller;
 import ukma.project.fifam.models.Journal;
 import ukma.project.fifam.models.PeriodicPays;
@@ -23,6 +25,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.PriorityQueue;
 
 @RestController
 public class AuthController {
@@ -61,8 +64,6 @@ public class AuthController {
         String t = jwtUtil.generateToken(userForReal);
         jwtUtil.validateToken(t, userForReal);
         updateJournalFromBalanceFiller(userForReal);
-//        journalRepo.updateJournalFromBalanceFiller("daily","weekly", "biweekly", "monthly", "yearly", userForReal.getId());
-//        journalRepo.updateJournalFromPeriodicPays("daily","weekly", "biweekly", "monthly", "yearly", userForReal.getId());
         return new ResponseEntity<>(jwtUtil.generateToken(userForReal), HttpStatus.OK);
     }
 
@@ -134,6 +135,50 @@ public class AuthController {
         return currentBalance;
     }
 
+    private PeriodicBalanceFiller updatePeriodicBalanceFiller(PeriodicBalanceFiller balanceFiller, User user, long currentTime, double lastBalance){
+        long secondsPerPeriod = getSecondsByFrequency(balanceFiller.frequency);
+
+        long time = balanceFiller.lastPayDate;
+        balanceFiller.lastBalance = lastBalance;
+        if (time + secondsPerPeriod <= currentTime){
+            Journal j = new Journal();
+            j.setCurrBalance(String.valueOf(lastBalance + balanceFiller.sum));
+            j.setDesc(balanceFiller.name);
+            j.setRecordDate(time + secondsPerPeriod);
+            j.setSum(balanceFiller.sum.toString());
+            j.setCategory(balanceFiller.category);
+            j.setUser(user);
+            journalRepo.save(j);
+            balanceFiller.lastBalance += balanceFiller.sum;
+            balanceFiller.lastPayDate = time + secondsPerPeriod;
+            if (balanceFiller.type == PeriodicFillerType.BALANCE_FILLER){
+                Optional<BalanceFiller> bf = balanceFillerRepo.findById(balanceFiller.id);
+                if (bf.isPresent()){
+                    bf.get().setLastPayDate(balanceFiller.lastPayDate);
+                    balanceFillerRepo.save(bf.get());
+                }
+            }else if (balanceFiller.type == PeriodicFillerType.PERIODIC_PAY){
+                Optional<PeriodicPays> pp = periodicPaysRepo.findById(balanceFiller.id);
+                if (pp.isPresent()){
+                    pp.get().setLastPayDate(balanceFiller.lastPayDate);
+                    periodicPaysRepo.save(pp.get());
+                }
+            }
+        }
+        return balanceFiller;
+    }
+
+    public void updateJournalFromPriorityQueue(PriorityQueue<PeriodicBalanceFiller> queue, User user, long currentTime, double lastBalance){
+        while (!queue.isEmpty()){
+            PeriodicBalanceFiller filler = queue.poll();
+            filler = updatePeriodicBalanceFiller(filler, user, currentTime, lastBalance);
+            if (filler.lastPayDate + getSecondsByFrequency(filler.frequency) <= currentTime){
+                queue.add(filler);
+            }
+            lastBalance = filler.lastBalance;
+        }
+    }
+
     public void updateJournalFromBalanceFiller(User user)
     {
         long currentTime = Instant.now().getEpochSecond();
@@ -143,21 +188,21 @@ public class AuthController {
             lastBalance = Double.parseDouble(lastJournal.get().getCurrBalance());
         }
 
-
         Optional<List<BalanceFiller>> balanceFillersOptional = balanceFillerRepo.findBalanceFillersByUserId(user);
-        if(balanceFillersOptional.isPresent()){
+        PriorityQueue<PeriodicBalanceFiller> queue = new PriorityQueue<>(PeriodicBalanceFiller.GetComparator());
+        if (balanceFillersOptional.isPresent()){
             List<BalanceFiller> balanceFillers = balanceFillersOptional.get();
-            for (BalanceFiller bf: balanceFillers) {
-                lastBalance = processBalanceFiller(bf, user, lastBalance, currentTime);
+            for (BalanceFiller bf : balanceFillers){
+                queue.add(new PeriodicBalanceFiller(PeriodicFillerType.BALANCE_FILLER, bf.getSum(), bf.getFreq(), bf.getLastPayDate(), "Payment from balance filler", null, bf.getId()));
             }
         }
-
         Optional<List<PeriodicPays>> periodicPaysOptional = periodicPaysRepo.findPeriodicPaysByUserId(user);
-        if (periodicPaysOptional.isPresent()){
+        if (periodicPaysOptional.isPresent()) {
             List<PeriodicPays> periodicPays = periodicPaysOptional.get();
-            for (PeriodicPays pp : periodicPays){
-                lastBalance = processPeriodicPay(pp, user, lastBalance, currentTime);
+            for (PeriodicPays pp : periodicPays) {
+                queue.add(new PeriodicBalanceFiller(PeriodicFillerType.PERIODIC_PAY, pp.getSum(), pp.getFreq(), pp.getLastPayDate(), pp.getName(), pp.getCategory(), pp.getId()));
             }
         }
+        updateJournalFromPriorityQueue(queue, user, currentTime, lastBalance);
     }
 }
