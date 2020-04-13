@@ -2,6 +2,7 @@ package ukma.project.fifam.controllers;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ukma.project.fifam.models.*;
@@ -54,8 +55,11 @@ public class UserController {
 
 
     @DeleteMapping(value = "/profile")
-    public ResponseEntity<?> removeUser(@RequestAttribute(value="userId") Long userId) {
+    public ResponseEntity<String> removeUser(@RequestAttribute(value="userId") Long userId) {
+        if(!userRepo.findById(userId).isPresent()){
+            return ResponseEntity.notFound().build();
+        }
         userRepo.deleteById(userId);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 }
