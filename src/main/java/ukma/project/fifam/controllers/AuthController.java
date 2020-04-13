@@ -43,6 +43,10 @@ public class AuthController {
 
     @PostMapping(value = "/register")
     public ResponseEntity<String> register(@Validated @RequestBody AuthDto dto){
+        Optional<User> userCheck = userRepo.findUserByEmail(dto.email);
+        if (userCheck.isPresent()){
+            return ResponseEntity.badRequest().body("User with such email is already registered");
+        }
         User user = userRepo.save(new User(dto.email, dto.password, "0"));
         return new ResponseEntity<>("OK", HttpStatus.CREATED);
     }
