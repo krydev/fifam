@@ -26,7 +26,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Category> categories;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Journal> journalRecords;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BalanceFiller> balanceFillers;
 
 
@@ -98,6 +101,9 @@ public class User {
         this.balanceFillers = balanceFillers;
     }
 
+    public List<Journal> getJournalRecords() {
+        return journalRecords;
+    }
 
     @Override
     public String toString() {
