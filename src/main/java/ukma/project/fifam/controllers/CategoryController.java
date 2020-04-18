@@ -82,31 +82,6 @@ public class CategoryController {
     }
 
 
-//    private ResponseEntity<?> handleExpense(User user, Category category, String sum){
-//        user.decreaseBalance(sum);
-//        boolean success = true;
-//        String errorText = null;
-//        // Check if balance became negative or category limit exceeded
-//        if (user.getBalance().charAt(0) == '-'){
-//            errorText = "Not enough money on balance";
-//            success = false;
-//        } else if (new BigDecimal(category.getCurrentExpenses()).add(new BigDecimal(sum))
-//                    .compareTo(new BigDecimal(category.getBudget())) > 0){
-//            errorText = "Exceeded category expenses limit";
-//            success = false;
-//        } else {
-//            //all good - updating current expenses
-//            category.increaseCurrentExpenses(sum);
-//        }
-//        if (!success){
-//            //returning balance to previous state
-//            user.increaseBalance(sum);
-//            return ResponseEntity.unprocessableEntity().body(errorText);
-//        }
-//        return ResponseEntity.ok().build();
-//
-//    }
-
     @PutMapping("/categories/{id}")
     public ResponseEntity<?> updateCategory(@RequestAttribute(value = "userId") Long userId,
                                             @PathVariable String id,
